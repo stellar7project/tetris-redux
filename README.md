@@ -14,6 +14,7 @@ Tetris Redux is a modern Python remake of the classic Tetris game, featuring cus
 - [Technologies Used](#technologies-used)
 - [Learning & Challenges](#learning--challenges)
 - [Demo](#demo)
+- [How to Play](#how-to-play)
 
 ---
 
@@ -95,3 +96,27 @@ Screenshots:
 
 Gameplay Video:
 [Watch Demo (YouTube)](https://www.youtube.com/watch?v=GWF7CgeE3ME)
+
+---
+
+## How to Play
+
+### Objective:
+
+Stack falling tetrominoes to complete horizontal lines. When a line is filled, it disappears and earns points. The game ends when the stack reaches the top of the playfield or when you achieve the end level goal.
+
+### Keyboard & Mouse Controls:
+
+Left/Right Arrow or Mouse Movement – Move tetromino left/right
+Down Arrow or Right Mouse Button – Accelerate tetromino fall speed
+Up Arrow or Mousewheel – Rotate tetromino
+Shift - Toggle tetromino bomb
+ESC – Pause / Open menu / Back to previous menu
+
+Note: Keyboard controls can be modified in the Options menu under Controls.
+
+### Special Features:
+
+Bombs – As you progress, tetrominoes can be charged with explosive energy. When placed, they detonate on contact, clearing nearby blocks by rows. Explosions can trigger chain reactions, creating new strategies for clearing the board. Bombs are acquired by clearing a Tetris (4-lines) or for completing a Combo.
+
+Combos - Groups of settled tetromino blocks can now fall through open spaces. Originally, they would stop at the next row that had any previously settled blocks. But now it is possible to clear multiple rows in quick succession. Each subsequent row or rows cleared is considered a combo.
