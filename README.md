@@ -27,21 +27,22 @@ Tetris Redux is a modern Python remake of the classic Tetris game, featuring cus
 ---
 
 ## Project Structure
-
+```bash
 tetris-redux/
-├─ fonts/ # Custom fonts
-├─ images/ # Game graphics and sprites
-├─ music/ # Background music
-├─ sounds/ # Sound effects
-├─ sourceart/ # Original source art files
+├─ fonts/       # Custom fonts
+├─ images/      # Game graphics and sprites
+├─ music/       # Background music
+├─ sounds/      # Sound effects
+├─ sourceart/   # Original source art files
 ├─ .gitignore
 ├─ README.md
-├─ TetrisRedux.py # Main launcher script
+├─ TetrisRedux.py   # Main launcher script
 ├─ file_version_info.txt
-├─ tetris.ico # Application icon
-├─ tetrisAssets.py # Asset management
-├─ tetrisGame.py # Core game logic
-└─ tetrisMenu.py # Menu and interface logic
+├─ tetris.ico       # Application icon
+├─ tetrisAssets.py  # Asset management
+├─ tetrisGame.py    # Core game logic
+└─ tetrisMenu.py    # Menu and interface logic
+```
 
 ---
 
@@ -51,10 +52,9 @@ tetris-redux/
 git clone https://github.com/stellar7project/tetris-redux.git
 cd tetris-redux
 ```
-Ensure Python 3.12.x or 3.13.x is installed.
+2. Ensure Python 3.12.x or 3.13.x is installed.
 
-Install required packages: pygame-ce 2.5.5
-
+3. Install required package: pygame-ce 2.5.5
 ```bash
 pip install pygame-ce
 ```
@@ -63,7 +63,6 @@ pip install pygame-ce
 
 ## Usage
 Run the main game file to start Tetris Redux:
-
 ```bash
 python TetrisRedux.py
 ```
@@ -88,11 +87,11 @@ python TetrisRedux.py
 
 ## Demo
 Screenshots:
-[Main Menu](screenshots/title_screen.png)
-[Tetris](screenshots/tetris.png)
-[Combo Setup](screenshots/combo_setup.png)
-[Combo Tetris](screenshots/tetris_combo.png)
-[Tetris Explosion](screenshots/tetris_explosion.png)
+[Main Menu(screenshots/title_screen.png)](screenshots/title_screen.png)
+[Tetris(screenshots/tetris.png)](screenshots/tetris.png)
+[Combo Setup(screenshots/combo_setup.png)](screenshots/combo_setup.png)
+[Combo Tetris(screenshots/tetris_combo.png)](screenshots/tetris_combo.png)
+[Tetris Explosion(screenshots/tetris_explosion.png)](screenshots/tetris_explosion.png)
 
 Gameplay Video:
 [Watch Demo (YouTube)](https://www.youtube.com/watch?v=GWF7CgeE3ME)
