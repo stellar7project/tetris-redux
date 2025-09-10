@@ -36,12 +36,12 @@ tetris-redux/
 ├─ sourceart/   # Original source art files
 ├─ .gitignore
 ├─ README.md
-├─ TetrisRedux.py   # Main launcher script
 ├─ file_version_info.txt
 ├─ tetris.ico       # Application icon
 ├─ tetrisAssets.py  # Asset management
 ├─ tetrisGame.py    # Core game logic
 └─ tetrisMenu.py    # Menu and interface logic
+├─ TetrisRedux.py   # Main launcher script
 ```
 
 ---
