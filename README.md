@@ -88,7 +88,11 @@ python TetrisRedux.py
 
 ## Demo
 Screenshots:
-
+[Main Menu](screenshots/title_screen.png)
+[Tetris](screenshots/tetris.png)
+[Combo Setup](screenshots/combo_setup.png)
+[Combo Tetris](screenshots/tetris_combo.png)
+[Tetris Explosion](screenshots/tetris_explosion.png)
 
 Gameplay Video:
-Watch Demo
+[Watch Demo (YouTube)](https://www.youtube.com/watch?v=GWF7CgeE3ME)
