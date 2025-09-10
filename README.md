@@ -1,83 +1,95 @@
-🎮 Tetris in Python (Pygame-CE)
+# Tetris Redux
 
-A fully functional recreation of the classic game Tetris, built in Python using the PyGame library.
-This project features complete gameplay, scoring, graphics, sound effects, and background music.
+[Repository Link](https://github.com/stellar7project/tetris-redux)
 
-🚀 Features
+Tetris Redux is a modern Python remake of the classic Tetris game, featuring custom graphics, music, and sound effects. This project demonstrates programming concepts such as game loops, event handling, and object-oriented design, making it ideal for educational purposes or as a portfolio piece.
 
-Classic Tetris gameplay (piece movement, rotation, line clearing, scoring).
+---
 
-Object-Oriented Design with modular classes for pieces, grid, and game logic.
+## Table of Contents
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Technologies Used](#technologies-used)
+- [Learning & Challenges](#learning--challenges)
+- [Demo](#demo)
 
-Real-time graphics rendering using the Pygame library.
+---
 
-Integrated sound effects and background music.
+## Features
+- Classic Tetris gameplay with keyboard controls  
+- Scoring and level progression system  
+- Custom graphics, fonts, and music  
+- Menu and in-game sound effects  
+- Modular Python design for easy readability and extension  
 
-Packaged as a standalone Windows installer for easy play.
+---
 
-Clean, well-documented code suitable for learning and teaching.
+## Project Structure
 
-📚 Teaching Applications
-
-This project is designed not just as a game, but as a teaching tool for computer science students.
-It demonstrates:
-
-Control structures (loops, conditionals).
-
-Functions and modular programming.
-
-Object-Oriented Programming (classes, methods, encapsulation).
-
-Event handling and user input.
-
-Graphics rendering and collision detection.
-
-Packaging and deployment of Python applications.
-
-🖼️ Screenshots
-
-(Add your screenshots here — e.g. images/title_screen.png, images/gameplay.png)
-
-🎥 Demo Video
-
-Click here to watch a short gameplay demo
- (link to YouTube/Vimeo/unlisted video)
-
-🔧 Installation
-Option 1: Run from Source
-
-Clone this repository:
-
-git clone https://github.com/your-username/tetris-pygame.git
-cd tetris-pygame
+tetris-redux/
+├─ fonts/ # Custom fonts
+├─ images/ # Game graphics and sprites
+├─ music/ # Background music
+├─ sounds/ # Sound effects
+├─ sourceart/ # Original source art files
+├─ .gitignore
+├─ README.md
+├─ TetrisRedux.py # Main launcher script
+├─ file_version_info.txt
+├─ tetris.ico # Application icon
+├─ tetrisAssets.py # Asset management
+├─ tetrisGame.py # Core game logic
+└─ tetrisMenu.py # Menu and interface logic
 
 
-Install dependencies:
 
-pip install pygame
+---
+
+## Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/stellar7project/tetris-redux.git
+cd tetris-redux
+Ensure Python 3.x is installed.
+
+Install required packages (if applicable):
+
+bash
+Copy code
+pip install -r requirements.txt
+Note: Add a requirements.txt file if using external libraries such as pygame.
+
+Usage
+Run the main game file to start Tetris Redux:
+
+bash
+Copy code
+python TetrisRedux.py
+Technologies Used
+Python 3.13.7 + pygame-ce 2.5.5
+
+Object-Oriented Programming
+
+Modular code design
+
+Custom assets (images, fonts, music, sounds)
+
+Learning & Challenges
+Implemented real-time event handling for smooth gameplay
+
+Managed assets modularly to separate graphics, music, and sounds from game logic
+
+Designed an extensible structure for menus and in-game systems
+
+Practiced debugging and testing Python programs to ensure a stable user experience
+
+Demo
+Screenshots:
 
 
-Run the game:
+Gameplay Video:
+Watch Demo
 
-python main.py
-
-Option 2: Windows Installer
-
-Download the latest Windows installer from the Releases page
-.
-
-Run the installer and start playing!
-
-📂 Repository Structure
-tetris-pygame/
-│── main.py                # Entry point for the game
-│── pieces.py              # Tetris piece classes
-│── game.py                # Game loop, logic, scoring
-│── assets/                # Graphics, sounds, music
-│── images/                # Screenshots for README
-│── README.md              # Project documentation
-
-🏫 About the Developer
-
-This project was created by Christopher Arpaia as part of a programming portfolio for teaching computer science.
-It showcases technical ability in Python as well as the ability to translate complex concepts into teachable lessons.
+Repository: https://github.com/stellar7project/tetris-redux
