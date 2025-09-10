@@ -121,7 +121,7 @@ Bombs – As you progress, tetrominoes can be charged with explosive energy. Whe
 
 Combos – Groups of settled tetromino blocks can now fall through open spaces. Originally, they would stop at the next row that had any previously settled blocks. But now it is possible to clear multiple rows in quick succession. Each subsequent row or rows cleared is considered a combo.
 
-Gameplay Options – You can change initial gameplay conditions, such as Start Speed, Bomb Amount, Drop Mode, and End Level.
+Gameplay Options – In the Options menu under Gameplay, you can change the following settings:
 ```bash
 START SPEED     # Starting fall speed (higher level means faster)
 BOMB AMOUNT     # Initial bomb count
