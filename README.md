@@ -106,17 +106,27 @@ Gameplay Video:
 Stack falling tetrominoes to complete horizontal lines. When a line is filled, it disappears and earns points. The game ends when the stack reaches the top of the playfield or when you achieve the end level goal.
 
 ### Keyboard & Mouse Controls:
-
-Left/Right Arrow or Mouse Movement – Move tetromino left/right
-Down Arrow or Right Mouse Button – Accelerate tetromino fall speed
-Up Arrow or Mousewheel – Rotate tetromino
-Shift - Toggle tetromino bomb
-ESC – Pause / Open menu / Back to previous menu
-
+```bash
+Left/Right Arrow or Mouse Movement  # Move tetromino left/right
+Down Arrow or Right Mouse Button    # Drop tetromino or accelerate fall speed
+Up Arrow or Mousewheel Scroll       # Rotate tetromino
+Shift or Left Mouse Button          # Toggle tetromino bomb
+ESC                                 # Pause / Open menu / Back to previous menu
+```
 Note: Keyboard controls can be modified in the Options menu under Controls.
 
 ### Special Features:
 
 Bombs – As you progress, tetrominoes can be charged with explosive energy. When placed, they detonate on contact, clearing nearby blocks by rows. Explosions can trigger chain reactions, creating new strategies for clearing the board. Bombs are acquired by clearing a Tetris (4-lines) or for completing a Combo.
 
-Combos - Groups of settled tetromino blocks can now fall through open spaces. Originally, they would stop at the next row that had any previously settled blocks. But now it is possible to clear multiple rows in quick succession. Each subsequent row or rows cleared is considered a combo.
+Combos – Groups of settled tetromino blocks can now fall through open spaces. Originally, they would stop at the next row that had any previously settled blocks. But now it is possible to clear multiple rows in quick succession. Each subsequent row or rows cleared is considered a combo.
+
+Gameplay Options – You can change initial gameplay conditions, such as Start Speed, Bomb Amount, Drop Mode, and End Level.
+```bash
+START SPEED     # Starting fall speed (higher level means faster)
+BOMB AMOUNT     # Initial bomb count
+DROP MODE       # Instant drop or hold down to accelerate fall
+END LEVEL       # Level goal to trigger ending (default 35)
+```
+
+Music – Background music is user-defined. Place any custom MP3 file in the music/ folder and it will be displayed as an available music track in-game.
