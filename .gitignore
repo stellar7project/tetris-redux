@@ -1,0 +1,9 @@
+# Ignore build and distribution folders
+/build/
+/dist/
+/Output/
+
+# Ignore installer and image files
+installer.iss
+setup_complete.bmp
+tetris.bmp
