@@ -87,13 +87,11 @@ python TetrisRedux.py
 
 ## Demo
 Screenshots:
-```bash
 [![Main Menu](screenshots/thumb-title_screen.png)](screenshots/title_screen.png)
 [![Tetris](screenshots/thumb-tetris.png)](screenshots/tetris.png)
 [![Combo Setup](screenshots/thumb-combo_setup.png)](screenshots/combo_setup.png)
 [![Combo Tetris](screenshots/thumb-tetris_combo.png)](screenshots/tetris_combo.png)
 [![Tetris Explosion](screenshots/thumb-tetris_explosion.png)](screenshots/tetris_explosion.png)
-```
 
 Gameplay Video:
 [Watch Demo (YouTube)](https://www.youtube.com/watch?v=GWF7CgeE3ME)
