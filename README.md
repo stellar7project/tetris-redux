@@ -117,11 +117,11 @@ Note: Keyboard controls can be modified in the Options menu under Controls.
 
 ### Special Features:
 
-Bombs – As you progress, tetrominoes can be charged with explosive energy. When placed, they detonate on contact, clearing nearby blocks by rows. Explosions can trigger chain reactions, creating new strategies for clearing the board. Bombs are acquired by clearing a Tetris (4-lines) or for completing a Combo.
+[Bombs] – As you progress, tetrominoes can be charged with explosive energy. When placed, they detonate on contact, clearing nearby blocks by rows. Explosions can trigger chain reactions, creating new strategies for clearing the board. Bombs are acquired by clearing a Tetris (4-lines) or for completing a Combo.
 
-Combos – Groups of settled tetromino blocks can now fall through open spaces. Originally, they would stop at the next row that had any previously settled blocks. But now it is possible to clear multiple rows in quick succession. Each subsequent row or rows cleared is considered a combo.
+[Combos] – Groups of settled tetromino blocks can now fall through open spaces. Originally, they would stop at the next row that had any previously settled blocks. But now it is possible to clear multiple rows in quick succession. Each subsequent row or rows cleared is considered a combo.
 
-Gameplay Options – In the Options menu under Gameplay, you can change the following settings:
+[Gameplay Options] – In the Options menu under Gameplay, you can change the following settings:
 ```bash
 START SPEED     # Starting fall speed (higher level means faster)
 BOMB AMOUNT     # Initial bomb count
@@ -129,4 +129,4 @@ DROP MODE       # Instant drop or hold down to accelerate fall
 END LEVEL       # Level goal to trigger ending (default 35)
 ```
 
-Music – Background music is user-defined. Place any custom MP3 file in the music/ folder and it will be displayed as an available music track in-game.
+[Music] – Background music is user-defined. Place any custom MP3 file in the music/ folder and it will be displayed as an available music track in-game.
