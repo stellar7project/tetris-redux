@@ -1,6 +1,6 @@
 # Tetris Redux
 
-[Repository Link](https://github.com/stellar7project/tetris-redux)
+[https://github.com/stellar7project/tetris-redux](https://github.com/stellar7project/tetris-redux)
 
 Tetris Redux is a modern Python remake of the classic Tetris game, featuring custom graphics, music, and sound effects. This project demonstrates programming concepts such as game loops, event handling, and object-oriented design, making it ideal for educational purposes or as a portfolio piece.
 
@@ -43,8 +43,6 @@ tetris-redux/
 ├─ tetrisGame.py # Core game logic
 └─ tetrisMenu.py # Menu and interface logic
 
-
-
 ---
 
 ## Installation
@@ -52,44 +50,45 @@ tetris-redux/
 ```bash
 git clone https://github.com/stellar7project/tetris-redux.git
 cd tetris-redux
-Ensure Python 3.x is installed.
+```
+Ensure Python 3.12.x or 3.13.x is installed.
 
-Install required packages (if applicable):
+Install required packages: pygame-ce 2.5.5
 
-bash
-Copy code
-pip install -r requirements.txt
-Note: Add a requirements.txt file if using external libraries such as pygame.
+```bash
+pip install pygame-ce
+```
 
-Usage
+---
+
+## Usage
 Run the main game file to start Tetris Redux:
 
-bash
-Copy code
+```bash
 python TetrisRedux.py
-Technologies Used
-Python 3.13.7 + pygame-ce 2.5.5
+```
 
-Object-Oriented Programming
+---
 
-Modular code design
+## Technologies Used
+- Python 3.13.7 + pygame-ce 2.5.5
+- Object-Oriented Programming
+- Modular code design
+- Custom assets (images, fonts, music, sounds)
 
-Custom assets (images, fonts, music, sounds)
+---
 
-Learning & Challenges
-Implemented real-time event handling for smooth gameplay
+## Learning & Challenges
+- Implemented real-time event handling for smooth gameplay
+- Managed assets modularly to separate graphics, music, and sounds from game logic
+- Designed an extensible structure for menus and in-game systems
+- Practiced debugging and testing Python programs to ensure a stable user experience
 
-Managed assets modularly to separate graphics, music, and sounds from game logic
+---
 
-Designed an extensible structure for menus and in-game systems
-
-Practiced debugging and testing Python programs to ensure a stable user experience
-
-Demo
+## Demo
 Screenshots:
 
 
 Gameplay Video:
 Watch Demo
-
-Repository: https://github.com/stellar7project/tetris-redux
