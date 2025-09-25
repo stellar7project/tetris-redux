@@ -1,4 +1,4 @@
-''' TETRIS Version 2.5 '''
+''' Version 2.6 '''
 
 from tetrisMenu import *
 
@@ -41,7 +41,7 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
     global font, smallFont, pointFont
     global scoreTitle, levelTitle, linesTitle, nextTitle, bombsTitle #gameOver
     global blockSize, colScheme
-    global monoColor #v2.5
+    #global monoColor #v2.5
 
     global GRID, SCORE, NEXT
     global gridLocX, gridLocY
@@ -74,9 +74,9 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
     gridHeight = int(blockSize*20) #960
     grid = pygame.transform.scale(gridSrc[colorScheme].copy(), (gridWidth, gridHeight))
     scoreWidth = int(blockSize*5) #240
-    scoreHeight = int(blockSize*9) #432
+    scoreHeight = int(blockSize*20) #v2.6 --#9 #432
     nextWidth = int(blockSize*5)
-    nextHeight = int(blockSize*9)
+    nextHeight = int(blockSize*20) #v2.6 --#9
 
     SetNextList()
 
@@ -97,10 +97,11 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
     combo = pygame.transform.scale(comboSrc.copy(), (int(comboSrc.get_rect().width*f/g), int(comboSrc.get_rect().height*f/g)))
     
     colScheme = colorScheme
+    ''' v2.6
     if colScheme == 7: #v2.5
         monoColor = randint(0,1)
     else:
-        monoColor = 0
+        monoColor = 0'''
 
     for i in range(len(dropFX)):
         dropFX[i][0] = GetNextList(colScheme, shape[0][2])[shapeType][iRot-1].copy() #v2.5
@@ -446,7 +447,7 @@ def GetBombedList():
     shape.clear()
 
 def CheckTetris():
-    global score, level, lines, rate
+    global score, level, lines, rate, bombs
     
     bonus = len(tetrisLines)
     tetrisLines.clear()
@@ -457,10 +458,8 @@ def CheckTetris():
     nTetris = len(tetrisLines)
     if nTetris > 0:
         #blockSound.play(ts_break)
-        if nTetris <= 4:
-            scoreSound.play(ts_tetris[nTetris-1])
-        else:
-            scoreSound.play(ts_tetris[4])
+        
+        scoreSound.play(ts_tetris[min(nTetris-1, 4)]) #v2.6 
 
         points = 100 * (nTetris + bonus)**2
         
@@ -475,7 +474,9 @@ def CheckTetris():
                 nextRate = 31 - level
                 if rate > nextRate:
                     rate = nextRate
-                
+        
+        if nTetris >= 4 and numBombs != -1: #v2.6
+            bombs += 1
         DrawScore()
         return True
     return False
@@ -504,28 +505,32 @@ def DrawScore():
     SCORE.blit(linesTitle, linesTitle.get_rect(center = (scoreWidth//2, blockSize*7)))
     linesText = font.render(str(lines), True, WHITE)
     SCORE.blit(linesText, linesText.get_rect(center = (scoreWidth//2, blockSize*8)))
+    #v2.6
+    SCORE.blit(bombsTitle, bombsTitle.get_rect(center=(scoreWidth//2, int(blockSize*10))))
+    if bombs != -1:
+        bombsText = font.render(str(bombs), True, WHITE)
+        SCORE.blit(bombsText, bombsText.get_rect(center=(scoreWidth//2, int(blockSize*11))))
 
 def DrawNext(n):
-    global monoColor #v2.5
-
     NEXT.fill(colorList[colScheme])
     pygame.draw.rect(NEXT, outlineColors[colScheme], NEXT.get_rect(), 5)
     
     NEXT.blit(nextTitle, nextTitle.get_rect(center = (nextWidth//2, blockSize)))
-    if colScheme == 7: #v2.5
-        monoColor = randint(0,1)
-        if monoColor == 0:
-            next = nextListGrey[n[0]][n[1]-1]
-        else:
-            next = nextListWhite[n[0]][n[1]-1]
-    else:
-        next = nextList[n[0]][n[1]-1]
-    NEXT.blit(next, next.get_rect(center = (nextWidth//2, int(blockSize*3.5))))
-    
+
+    #v2.6 Rescaled
+    nextOffsetY = blockSize * 3.0 #3.5
+    for i in range(len(n)):
+        next = GetNextList(colScheme, n[i][2])[n[i][0]][n[i][1]-1]
+        x = next.get_rect().width * 0.7
+        y = next.get_rect().height * 0.7
+        next = pygame.transform.scale(next, (x,y))
+        NEXT.blit(next, next.get_rect(center = (nextWidth//2, int(nextOffsetY * (i + 1)))))
+    ''' v2.6 -- Move to SCORE board
     NEXT.blit(bombsTitle, bombsTitle.get_rect(center=(nextWidth//2, int(blockSize*6.5))))
     if bombs != -1:
         bombsText = font.render(str(bombs), True, WHITE)
         NEXT.blit(bombsText, bombsText.get_rect(center=(nextWidth//2, int(blockSize*7.5))))
+    '''
 
 screenShake = [0, 0]
 def DrawDisplay():
@@ -574,8 +579,8 @@ def DrawDisplay():
             DISPLAY.blit(backdrop, (backdropRect.left+shakeX, backdropRect.top+shakeY))
             DISPLAY.blit(frame, (shakeX+gridLocX-blockSize, shakeY+gridLocY-blockSize))
         DISPLAY.blit(GRID,(gridLocX+shakeX, gridLocY+shakeY))
-        DISPLAY.blit(SCORE,(gridLocX+gridWidth+blockSize*2+shakeX, gridLocY+blockSize+shakeY)) #(1248,108))
-        DISPLAY.blit(NEXT,(gridLocX-blockSize*7+shakeX, gridLocY+blockSize+shakeY)) #(432,108))
+        DISPLAY.blit(SCORE,(gridLocX+gridWidth+blockSize*2+shakeX, gridLocY+shakeY)) #v2.6 Adjusted y-offest --#(1248,108))
+        DISPLAY.blit(NEXT,(gridLocX-blockSize*7+shakeX, gridLocY+shakeY)) #v2.6 Adjusted y-offest --#(432,108))
         
 
         i = 0
@@ -629,8 +634,8 @@ def DrawDisplay():
         #if outHots != []:
         #    DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
         DISPLAY.blit(GRID,(gridLocX, gridLocY))
-        DISPLAY.blit(SCORE,(gridLocX+gridWidth+blockSize*2, gridLocY+blockSize)) #(1248,108))
-        DISPLAY.blit(NEXT,(gridLocX-blockSize*7, gridLocY+blockSize)) #(432,108))
+        DISPLAY.blit(SCORE,(gridLocX+gridWidth+blockSize*2, gridLocY)) #v2.6 Adjusted y-offest --#(1248,108))
+        DISPLAY.blit(NEXT,(gridLocX-blockSize*7, gridLocY)) #v2.6 Adjusted y-offest --#(432,108))
         updateRects.append(Rect(gridLocX, gridLocY, gridWidth, gridHeight))
         updateRects.append(Rect(gridLocX+gridWidth+blockSize*2, gridLocY+blockSize, scoreWidth, scoreHeight))
         updateRects.append(Rect(gridLocX-blockSize*7, gridLocY+blockSize, nextWidth, nextHeight))
@@ -658,7 +663,7 @@ def SpawnShape():
     global bMoved
     global shapeType, iRot
     global nextShapes
-
+    global shapeList
     switch = {
         0: gen7,
         1: gen7,
@@ -680,36 +685,33 @@ def SpawnShape():
 
     if not pygame.mixer.music.get_busy(): #v2.2
         PlayNextTrack(False)
-
-    if nextShapes == []:
-        n = randint(0,6)
-    else:
-        n = nextShapes[0][0]
+    
+    #v2.6 Randomization
+    if nextShapes != []:
+        if shapeList == []:
+            shapeList = [0,1,2,3,4,5,6]
+            shapeList.pop(nextShapes[len(nextShapes)-1][0])
+        count = 1
         DelayFrames(12)
+    else: # Game Start
+        shapeList = [0,1,2,3,4,5,6]
+        count = 7
+    
+    for i in range(count):
+        r = randint(0,len(shapeList)-1)
+        nextShapes.append((shapeList[r], randint(0, len(nextList[shapeList[r]])-1), randint(0, 1))) #v2.6 Saved monochrome colour 3rd slot
+        shapeList.pop(r)
 
+    n = nextShapes[0][0]
     shapeType = n
     gen = switch.get(n)
-    gen(blockSize, gridWidth//2, colScheme+monoColor, n==1 or n==4) #v2.5
-        
-    if nextShapes == []:
-        if len(rotOffsets) > 0:
-            for i in range(randint(0,3)):
-                RotateShape(0, False)
-        nextShapes.append((n, iRot))
-    else:
-        for i in range(nextShapes[0][1]):
-            RotateShape(0, False)
-
-    if len(nextShapes) == 1:
-        shapeList = [0,1,2,3,4,5,6]
-        shapeList.pop(shapeList.index(n))
-        for i in range(6):
-            r = randint(0,len(shapeList)-1)
-            nextShapes.append((shapeList[r], randint(0, len(nextList[shapeList[r]])-1)))
-            shapeList.pop(r)
-
+    gen(blockSize, gridWidth//2, colScheme+nextShapes[0][2], n==1 or n==4) #v2.5
+    
+    for i in range(nextShapes[0][1]):
+        RotateShape(0, False)
+    
     nextShapes.pop(0)
-    DrawNext(nextShapes[0])
+    DrawNext(nextShapes)
 
 def AddDropFX(dropDist):
     left = gridWidth
@@ -1005,6 +1007,7 @@ def GameStarted(bRollCredits):
                         bTetris = True
                         GetBombedList()
                         bombs -= 1
+                        DrawScore() #v2.6 Update bomb inventory on SCORE board
                         if bDrop:
                             SmashBlocks(False, False)
                             bBomb = False
@@ -1143,8 +1146,8 @@ def GameStarted(bRollCredits):
                             d = 0
                             #if tetrisEffect == 4:
                             bQuad = True
-                            if numBombs != -1:
-                                bombs += 1
+                            #if numBombs != -1: #v2.6 Move to CheckTetris()
+                            #    bombs += 1
                             if colScheme == 7: #v2.5
                                 for i in range(len(hotList)):
                                     hotList[i].color = tetrisColors[randint(7,8)]
@@ -1244,12 +1247,12 @@ def GameStarted(bRollCredits):
                             SpawnShape()
                     else: # COMBO
                         bCombo = True
-                        if numBombs != -1:
-                            bombs += 1
+                        #if numBombs != -1: -- v2.6 Handled in CheckTetris()
+                        #    bombs += 1
                         tetrisEffect = GetTetrisEffect(len(tetrisLines))
                         effectDir = -1
                         explode = 1
-                        DrawNext(nextShapes[0])
+                        DrawNext(nextShapes)
 
 
         DrawBlocks()
@@ -1797,7 +1800,7 @@ def Paused(bCredits):
             graphics = InitSettings('graphics')
             SetGraphics(graphics[0], graphics[1], graphics[2], graphics[3])
             DrawScore()
-            DrawNext(nextShapes[0])
+            DrawNext(nextShapes)
             InitOptions(blockSize/48, gridWidth//2, 0)
             option = 'options'
         elif option == 'keybind':

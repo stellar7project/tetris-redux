@@ -1,9 +1,9 @@
-''' TETRIS Redux Version 2.5 '''
+''' TETRIS Redux Version 2.6 '''
 from random import randint
 from tetrisGame import GameStarted
 from tetrisMenu import *
 
-GAMEVERSION = '2.5.1'
+GAMEVERSION = '2.6'
 
 mainFrameSrc = (
     pygame.image.load("images/schemes/mainFrameRed.png").convert(),

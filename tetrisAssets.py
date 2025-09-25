@@ -1,4 +1,4 @@
-'''Version 2.5'''
+''' Version 2.6 '''
 import pygame, os.path
 from pygame.locals import *
 from random import randint, random
@@ -510,6 +510,7 @@ pointsDat = [ #v2.2
     0
 ]
 
+shapeList = [] #v2.6
 shape = []
 rotOffsets = []
 rotProxy = []
@@ -610,14 +611,11 @@ def ResizeBlocks(f, prevSize):
         #tetris4Blocks[i] = pygame.transform.scale(tetris4Source[i].copy(), (int(480*f), int(192*f)))
         
         for j in range(len(nextList[i])): #v2.5
-            nextTetromino = nextListSource[i][j]
-            x = int(nextTetromino.get_rect().width * f)
-            y = int(nextTetromino.get_rect().height * f)
-            nextList[i][j] = pygame.transform.scale(nextTetromino.copy(), (x,y))
-            nextTetromino = nextListSrcGrey[i][j]
-            nextListGrey[i][j] = pygame.transform.scale(nextTetromino.copy(), (x,y))
-            nextTetromino = nextListSrcWhite[i][j]
-            nextListWhite[i][j] = pygame.transform.scale(nextTetromino.copy(), (x,y))
+            x = int(nextListSource[i][j].get_rect().width * f) 
+            y = int(nextListSource[i][j].get_rect().height * f) 
+            nextList[i][j] = pygame.transform.scale(nextListSource[i][j], (x,y))
+            nextListGrey[i][j] = pygame.transform.scale(nextListSrcGrey[i][j], (x,y))
+            nextListWhite[i][j] = pygame.transform.scale(nextListSrcWhite[i][j], (x,y))
 
     for i in range(len(shape)):
         shape[i][0] = blocks[shape[i][2]]

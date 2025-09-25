@@ -1,4 +1,4 @@
-'''Version 2.4'''
+''' Version 2.5 '''
 import sys
 from tetrisAssets import *
 
