@@ -1,4 +1,5 @@
 # Ignore build and distribution folders
+/__pycache__/
 /build/
 /dist/
 /Output/
@@ -7,4 +8,6 @@
 installer.iss
 setup_complete.bmp
 tetris.bmp
+tetris.ini
 TetrisRedux.spec
+topten.ini
