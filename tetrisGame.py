@@ -700,7 +700,13 @@ def SpawnShape():
     
     for i in range(count):
         r = randint(0,len(shapeList)-1)
-        nextShapes.append((shapeList[r], randint(0, len(nextList[shapeList[r]])-1), randint(0, 1))) #v2.6 Saved monochrome colour 3rd slot
+        #v2.6 Saved monochrome colour at index 2
+        match colScheme:
+            case 7:
+                monochrome = randint(0, 1)
+            case _:
+                monochrome = 0
+        nextShapes.append((shapeList[r], randint(0, len(nextList[shapeList[r]])-1), monochrome)) 
         shapeList.pop(r)
 
     n = nextShapes[0][0]
