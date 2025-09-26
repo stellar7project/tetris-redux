@@ -565,13 +565,14 @@ def DrawDisplay():
             DISPLAY.blit(colorSrc['black'], (shakeX, shakeY))
             DISPLAY.blit(frame, (shakeX+gridLocX-blockSize, shakeY+gridLocY-blockSize))
             if not bBombed:
-                DISPLAY.blit(tetrisOut, tetrisOut.get_rect(right=displayWidth//2-blockSize*7, top=displayHeight//2+blockSize*2))
-                DISPLAY.blit(tetrisOut, tetrisOut.get_rect(left=displayWidth//2+blockSize*7, top=displayHeight//2+blockSize*2))
+                #v2.6 Vertical Tetris/Combo Text
                 if bCombo:
-                    DISPLAY.blit(combo, combo.get_rect(right=displayWidth//2-int(blockSize*6.5), top=displayHeight//2+blockSize*6))
-                    DISPLAY.blit(combo, combo.get_rect(left=displayWidth//2+int(blockSize*6.5), top=displayHeight//2+blockSize*6))
+                    DISPLAY.blit(combo, combo.get_rect(centerx=blockSize*4, centery=displayHeight//2)) #(right=displayWidth//2-int(blockSize*6.5), top=displayHeight//2+blockSize*6))
+                    DISPLAY.blit(combo, combo.get_rect(centerx=displayWidth-blockSize*4, centery=displayHeight//2)) #(left=displayWidth//2+int(blockSize*6.5), top=displayHeight//2+blockSize*6))
                     pointsMsg = pointFont.render(str(pointsDat[0]), True, outlineColors[randint(0,6)])
                 else:
+                    DISPLAY.blit(tetrisOut, tetrisOut.get_rect(centerx=blockSize*4, centery=displayHeight//2)) #(right=displayWidth//2-blockSize*7, top=displayHeight//2+blockSize*2))
+                    DISPLAY.blit(tetrisOut, tetrisOut.get_rect(centerx=displayWidth-blockSize*4, centery=displayHeight//2)) #(left=displayWidth//2+blockSize*7, top=displayHeight//2+blockSize*2))
                     pointsMsg = pointFont.render(str(pointsDat[0]), True, pointsDat[2])
         else:
             if backdropRect.bottom < displayHeight: #v2.2
