@@ -1,7 +1,7 @@
 ''' Version 2.6 '''
 
 from tetrisMenu import *
-
+from collections import deque #v2.6
 #pygame.init()
 
 #DISPLAY = pygame.display.set_mode((displayWidth, displayHeight))
@@ -511,7 +511,7 @@ def DrawScore():
         bombsText = font.render(str(bombs), True, WHITE)
         SCORE.blit(bombsText, bombsText.get_rect(center=(scoreWidth//2, int(blockSize*11))))
 
-def DrawNext(n):
+def DrawNext():
     NEXT.fill(colorList[colScheme])
     pygame.draw.rect(NEXT, outlineColors[colScheme], NEXT.get_rect(), 5)
     
@@ -519,12 +519,14 @@ def DrawNext(n):
 
     #v2.6 Rescaled
     nextOffsetY = blockSize * 3.0 #3.5
-    for i in range(len(n)):
-        next = GetNextList(colScheme, n[i][2])[n[i][0]][n[i][1]-1]
+    i = 0
+    for item in nextDeque:
+        next = GetNextList(colScheme, item[2])[item[0]][item[1]-1]
         x = next.get_rect().width * 0.7
         y = next.get_rect().height * 0.7
         next = pygame.transform.scale(next, (x,y))
         NEXT.blit(next, next.get_rect(center = (nextWidth//2, int(nextOffsetY * (i + 1)))))
+        i += 1
     ''' v2.6 -- Move to SCORE board
     NEXT.blit(bombsTitle, bombsTitle.get_rect(center=(nextWidth//2, int(blockSize*6.5))))
     if bombs != -1:
@@ -659,11 +661,11 @@ def DrawDisplay():
             pointsDat[0] = 0
         
         
-nextShapes = []
+nextDeque = deque() #v2.6
 def SpawnShape():
     global bMoved
     global shapeType, iRot
-    global nextShapes
+    #global nextDeque
     global shapeList
     switch = {
         0: gen7,
@@ -688,10 +690,10 @@ def SpawnShape():
         PlayNextTrack(False)
     
     #v2.6 Randomization
-    if nextShapes != []:
+    if nextDeque:
         if shapeList == []:
             shapeList = [0,1,2,3,4,5,6]
-            shapeList.pop(nextShapes[len(nextShapes)-1][0])
+            shapeList.pop(nextDeque[-1][0])
         count = 1
         DelayFrames(12)
     else: # Game Start
@@ -706,19 +708,19 @@ def SpawnShape():
                 monochrome = randint(0, 1)
             case _:
                 monochrome = 0
-        nextShapes.append((shapeList[r], randint(0, len(nextList[shapeList[r]])-1), monochrome)) 
+        nextDeque.append((shapeList[r], randint(0, len(nextList[shapeList[r]])-1), monochrome)) 
         shapeList.pop(r)
 
-    n = nextShapes[0][0]
+    n = nextDeque[0][0]
     shapeType = n
     gen = switch.get(n)
-    gen(blockSize, gridWidth//2, colScheme+nextShapes[0][2], n==1 or n==4) #v2.5
+    gen(blockSize, gridWidth//2, colScheme+nextDeque[0][2], n==1 or n==4) #v2.5
     
-    for i in range(nextShapes[0][1]):
+    for i in range(nextDeque[0][1]):
         RotateShape(0, False)
     
-    nextShapes.pop(0)
-    DrawNext(nextShapes)
+    nextDeque.popleft()
+    DrawNext()
 
 def AddDropFX(dropDist):
     left = gridWidth
@@ -1259,7 +1261,7 @@ def GameStarted(bRollCredits):
                         tetrisEffect = GetTetrisEffect(len(tetrisLines))
                         effectDir = -1
                         explode = 1
-                        DrawNext(nextShapes)
+                        DrawNext()
 
 
         DrawBlocks()
@@ -1807,7 +1809,7 @@ def Paused(bCredits):
             graphics = InitSettings('graphics')
             SetGraphics(graphics[0], graphics[1], graphics[2], graphics[3])
             DrawScore()
-            DrawNext(nextShapes)
+            DrawNext()
             InitOptions(blockSize/48, gridWidth//2, 0)
             option = 'options'
         elif option == 'keybind':
@@ -1890,7 +1892,7 @@ def ResetGame():
 
     blockFX.clear()
     blockList.clear()
-    nextShapes.clear()
+    nextDeque.clear()
     bDrop = False
     bBomb = False
     bBombed = False
