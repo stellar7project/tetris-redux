@@ -503,6 +503,15 @@ def GetNextList(colorScheme, monoColor): #v2.5
         return nextListWhite
     return nextList
 
+def GetNextRandomIndex(curr, min, max): #v2.6
+    next = randint(min, max)
+    if next == curr:
+        if next < max:
+            next += 1
+        else:
+            next = min
+    return next
+
 pointsDat = [ #v2.2
     0,
     None,

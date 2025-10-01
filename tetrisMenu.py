@@ -1,4 +1,4 @@
-''' Version 2.5 '''
+''' Version 2.6 '''
 import sys
 from tetrisAssets import *
 
@@ -28,7 +28,11 @@ iRes = resolutions.index((VideoInfo.current_w, VideoInfo.current_h))
 bWindowed = False
 #bDropFX = True
 colourScheme = 8                #v2.5 RANDOM SCHEME
-backdropIndex = len(backdrops)  #v2.5 RANDOM BACKDROP
+if backdrops != []:
+    backdropIndex = len(backdrops)  #v2.6 RANDOM BACKDROP
+else:
+    backdropIndex = -1
+
 SCREENMODE = ('FULLSCREEN', 'WINDOWED')
 TOGGLE = ('OFF', 'ON')
 DROPMODE = ('INSTANT', 'HOLD KEY')
@@ -302,6 +306,10 @@ def getCursorColor():
 #v2.4
 def getColorScheme():
     return colorScheme
+#v2.6
+def setColorScheme(i):
+    global colorScheme
+    colorScheme = i
 
 def DrawCursor(DISPLAY, MENU, menuRect):
     pygame.draw.rect(MENU, cursorColor, cPosRect, winThick) #v2.4
@@ -441,7 +449,7 @@ def GetSound(contents):
 #onLoad = True #v2.5
 def GetGraphics(contents):
     global iRes, bWindowed, colourScheme, colorScheme, backdropIndex, backdrop
-    global onLoad
+    #global onLoad
     if '[VIDEO]\n' in contents:
         k = contents.index('[VIDEO]\n')
         resX = int(contents[k+1][contents[k+1].index('=')+1:len(contents[k+1])])
@@ -449,7 +457,11 @@ def GetGraphics(contents):
         bWindowed = 'True' in contents[k+3]
         #bDropFX = 'True' in contents[k+4]
         colourScheme = int(contents[k+4][contents[k+4].index('=')+1:len(contents[k+4])]) #v2.5 RANDOM SCHEME
-        backdropIndex = int(contents[k+5][contents[k+5].index('=')+1:len(contents[k+5])])
+        
+        if backdrops != []: #v2.6 Check backdrop availability
+            backdropIndex = min(int(contents[k+5][contents[k+5].index('=')+1:len(contents[k+5])]), len(backdrops))
+        else:
+            backdropIndex = -1
 
         if (resX, resY) in resolutions:
             iRes = resolutions.index( (resX, resY) )
@@ -473,10 +485,10 @@ def GetGraphics(contents):
     else:
         colorScheme = colourScheme
     if backdropIndex == len(backdrops):
-        backdrop = randint(0, len(backdrops)-1) #v2.5 RANDOM BACKDROP
+        backIndex = randint(0, len(backdrops)-1) #v2.5 RANDOM BACKDROP
     else:
-        backdrop = backdropIndex
-    return (resolutions[iRes], bWindowed, colorScheme, backdrop) #bDropFX
+        backIndex = backdropIndex
+    return (resolutions[iRes], bWindowed, backIndex) #bDropFX
 
 def GetControls(contents):
     global leftKey, rightKey, rotateKey, dropKey, bombKey
@@ -1353,7 +1365,7 @@ def graphicsOption(key):
                 colorScheme = randint(0,7)
             else:
                 colorScheme = colourScheme
-        elif cp == 3:
+        elif cp == 3 and backdrops != []: #v2.6 Check backdrop availability
             if backdropIndex > -1:
                 backdropIndex -= 1
             else:
@@ -1383,7 +1395,7 @@ def graphicsOption(key):
                 colorScheme = randint(0,7)
             else:
                 colorScheme = colourScheme
-        elif cp == 3:
+        elif cp == 3 and backdrops != []: #v2.6 Check backdrop availability
             if backdropIndex < len(backdrops):
                 backdropIndex += 1
             else:

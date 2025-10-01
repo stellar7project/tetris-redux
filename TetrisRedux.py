@@ -43,7 +43,7 @@ reduxSrc = (
     (pygame.image.load("images/text/redux_off.png").convert_alpha(), pygame.image.load("images/text/redux_glow.png").convert_alpha())
 )
 
-def SetRes(resolution, bWindowed, colorScheme, backdropIndex):
+def SetRes(resolution, bWindowed, backdropIndex):
     global DISPLAY, TETRIS, displayWidth, displayHeight
     global mainFrame, mainFrameRect, tetrisGrid, tetrisLogo, tetrisLogoRect, reduxRect #tetrisMask, rainbow, rainbowRect
     global tetrisRect, cursorRect, cursorRects
@@ -70,6 +70,7 @@ def SetRes(resolution, bWindowed, colorScheme, backdropIndex):
         backdrop = pygame.transform.scale(backdropSrc[backdropIndex].copy(), resolution) #(blockSize*40, blockSize*22+blockSize//2))
     else:
         backdrop = None
+    colorScheme = getColorScheme() #v2.6
 
     SetNextList()
     ResizeBlocks(f, oldSize) #blockSize/oldSize)
@@ -267,13 +268,13 @@ def LaunchGame(bRollCredits=False):
     GameStarted(bRollCredits)
     pygame.mouse.set_visible(True)
     screenSet = InitSettings('graphics')
-    SetRes(screenSet[0], screenSet[1], screenSet[2], screenSet[3]) #Reset screen mode on return
+    SetRes(screenSet[0], screenSet[1], screenSet[2]) #Reset screen mode on return
     InitMain()
 
 def main():
     #INITIALIZE ========================
     screenSet = InitSettings('graphics')
-    SetRes(screenSet[0], screenSet[1], screenSet[2], screenSet[3])
+    SetRes(screenSet[0], screenSet[1], screenSet[2])
     ShowLogo()
 
     InitSettings('sound')
@@ -551,7 +552,7 @@ def main():
         elif option != '' and option != 'options':
             if option == 'setmode':
                 screenSet = InitSettings('graphics')
-                SetRes(screenSet[0], screenSet[1], screenSet[2], screenSet[3])
+                SetRes(screenSet[0], screenSet[1], screenSet[2])
             InitOptions(blockSize/48, tetrisRect.width//2, tetrisRect.height//2+blockSize)
             option = 'options'
             bRefreshBackdrop = True

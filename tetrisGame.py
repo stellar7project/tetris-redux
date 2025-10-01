@@ -34,13 +34,15 @@ def SetControls():
     dropKey = controls[3]
     bombKey = controls[4]
     
-def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
+def SetGraphics(resolution, bWindowed, backIndex):
     global DISPLAY, displayWidth, displayHeight
     global gridWidth, gridHeight, scoreWidth, scoreHeight, nextWidth, nextHeight
     global backdrop, backdropRect, grid, frame, tetrisOut, tetris4Out, combo
     global font, smallFont, pointFont
     global scoreTitle, levelTitle, linesTitle, nextTitle, bombsTitle #gameOver
-    global blockSize, colScheme
+    global blockSize 
+    
+    global colorScheme, backScheme #v2.6
     #global monoColor #v2.5
 
     global GRID, SCORE, NEXT
@@ -48,9 +50,9 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
 
     
     if bWindowed:
-        DISPLAY = pygame.display.set_mode(resolution) # Obsolete --HWSURFACE|DOUBLEBUF)
+        DISPLAY = pygame.display.set_mode(resolution) # Deprecated -- HWSURFACE|DOUBLEBUF)
     else:
-        DISPLAY = pygame.display.set_mode(resolution, pygame.FULLSCREEN) # Obsolete --|HWSURFACE|DOUBLEBUF)
+        DISPLAY = pygame.display.set_mode(resolution, pygame.FULLSCREEN) # Deprecated -- |HWSURFACE|DOUBLEBUF)
 
     displayWidth = DISPLAY.get_rect().width
     displayHeight = DISPLAY.get_rect().height
@@ -60,8 +62,10 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
     oldSize = blockSize
     blockSize = int(48 * f)
 
-    if backdropIndex != -1:
-        backdropImg = backdropSrc[backdropIndex].copy()
+    colorScheme = getColorScheme() #v2.6
+    backScheme = backIndex #v2.6
+    if backIndex != -1:
+        backdropImg = backdropSrc[backIndex].copy()
     else:
         backdropImg = colorSrc['black']
     backdrop = pygame.transform.scale(backdropImg, resolution) #(blockSize*40, blockSize*22+blockSize//2))
@@ -83,7 +87,7 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
     fOffset = blockSize/oldSize
     ResizeBlocks(f, oldSize) #fOffset)
     #resF = f
-    #heatBlock = pygame.transform.scale(heatSource.copy(), (blockSize, blockSize))
+    
     frame = pygame.transform.scale(frameSrc[colorScheme].copy(), (gridWidth+blockSize*2, gridHeight+blockSize*2))
     aspectRatio = resolution[0]/resolution[1]
     if aspectRatio == 4/3 or aspectRatio == 5/4:
@@ -96,15 +100,14 @@ def SetGraphics(resolution, bWindowed, colorScheme, backdropIndex):
     tetris4Out = pygame.transform.scale(tetrisOutSrc[1].copy(), (int(tetrisOutSrc[1].get_rect().width*f/g), int(tetrisOutSrc[1].get_rect().height*f/g)))
     combo = pygame.transform.scale(comboSrc.copy(), (int(comboSrc.get_rect().width*f/g), int(comboSrc.get_rect().height*f/g)))
     
-    colScheme = colorScheme
     ''' v2.6
-    if colScheme == 7: #v2.5
+    if colorScheme == 7: #v2.5
         monoColor = randint(0,1)
     else:
         monoColor = 0'''
 
     for i in range(len(dropFX)):
-        dropFX[i][0] = GetNextList(colScheme, shape[0][2])[shapeType][iRot-1].copy() #v2.5
+        dropFX[i][0] = GetNextList(colorScheme, shape[0][2])[shapeType][iRot-1].copy() #v2.5
         dropFX[i][0].set_alpha(dropFX[i][2])
         dropFX[i][1][0] = int(dropFX[i][1][0]*fOffset)
         dropFX[i][1][1] = int(dropFX[i][1][1]*fOffset)
@@ -448,7 +451,7 @@ def GetBombedList():
 
 def CheckTetris():
     global score, level, lines, rate, bombs
-    
+
     bonus = len(tetrisLines)
     tetrisLines.clear()
     for i in range(len(blockList)):
@@ -470,10 +473,8 @@ def CheckTetris():
         if lines//10 != lineLevel:
             level += 1
             score += bombs * 100 #v2.5
-            if level < 30:
-                nextRate = 31 - level
-                if rate > nextRate:
-                    rate = nextRate
+            if level <= 30: #v2.6
+                rate = min(rate, 31 - level)
         
         if nTetris >= 4 and numBombs != -1: #v2.6
             bombs += 1
@@ -491,8 +492,8 @@ score = 0
 level = 0
 lines = 0
 def DrawScore():    
-    SCORE.fill(colorList[colScheme])
-    pygame.draw.rect(SCORE, outlineColors[colScheme], SCORE.get_rect(), 5)
+    SCORE.fill(colorList[colorScheme])
+    pygame.draw.rect(SCORE, outlineColors[colorScheme], SCORE.get_rect(), 5)
 
     SCORE.blit(scoreTitle, scoreTitle.get_rect(center = (scoreWidth//2, blockSize)))
     scoreText = font.render(str(score), True, WHITE)
@@ -512,8 +513,8 @@ def DrawScore():
         SCORE.blit(bombsText, bombsText.get_rect(center=(scoreWidth//2, int(blockSize*11))))
 
 def DrawNext():
-    NEXT.fill(colorList[colScheme])
-    pygame.draw.rect(NEXT, outlineColors[colScheme], NEXT.get_rect(), 5)
+    NEXT.fill(colorList[colorScheme])
+    pygame.draw.rect(NEXT, outlineColors[colorScheme], NEXT.get_rect(), 5)
     
     NEXT.blit(nextTitle, nextTitle.get_rect(center = (nextWidth//2, blockSize)))
 
@@ -521,7 +522,7 @@ def DrawNext():
     nextOffsetY = blockSize * 3.0 #3.5
     i = 0
     for item in nextDeque:
-        next = GetNextList(colScheme, item[2])[item[0]][item[1]-1]
+        next = GetNextList(colorScheme, item[2])[item[0]][item[1]-1]
         x = next.get_rect().width * 0.7
         y = next.get_rect().height * 0.7
         next = pygame.transform.scale(next, (x,y))
@@ -556,7 +557,7 @@ def DrawDisplay():
         
         
         if flash == 1:
-            if tetrisEffect == 4 and colScheme < 7: #v2.5
+            if tetrisEffect == 4 and colorScheme < 7: #v2.5
                 DISPLAY.fill(outlineColors[randint(0,6)])
             else:
                 DISPLAY.blit(colorSrc['white'], (shakeX, shakeY))
@@ -703,7 +704,7 @@ def SpawnShape():
     for i in range(count):
         r = randint(0,len(shapeList)-1)
         #v2.6 Saved monochrome colour at index 2
-        match colScheme:
+        match colorScheme:
             case 7:
                 monochrome = randint(0, 1)
             case _:
@@ -714,7 +715,7 @@ def SpawnShape():
     n = nextDeque[0][0]
     shapeType = n
     gen = switch.get(n)
-    gen(blockSize, gridWidth//2, colScheme+nextDeque[0][2], n==1 or n==4) #v2.5
+    gen(blockSize, gridWidth//2, colorScheme+nextDeque[0][2], n==1 or n==4) #v2.5
     
     for i in range(nextDeque[0][1]):
         RotateShape(0, False)
@@ -731,7 +732,7 @@ def AddDropFX(dropDist):
         if shape[i][1][1] < top:
             top = shape[i][1][1]
 
-    drop = GetNextList(colScheme, shape[0][2])[shapeType][iRot-1].copy() #v2.5
+    drop = GetNextList(colorScheme, shape[0][2])[shapeType][iRot-1].copy() #v2.5
     if dropDist != 0:
         drop = pygame.transform.scale(drop, (drop.get_rect().width, dropDist+drop.get_rect().height))
     drop.set_alpha(150)
@@ -794,6 +795,23 @@ def SmashBlocks(bCentered, bQuad):
             bombedList.append(block)
         '''  
         bombList.pop(0)
+    
+def RandomBackdropSchemes(): #v2.6
+    global backdrop, frame, grid
+    global backScheme, colorScheme
+
+    nBackdrops = len(backdrops)
+    if backdropIndex == nBackdrops:
+        backScheme = GetNextRandomIndex(backScheme, 0, nBackdrops-1)
+        backdrop = pygame.transform.scale(backdropSrc[backScheme], (displayWidth, displayHeight))
+    
+    if colourScheme == 8:
+        colorScheme = GetNextRandomIndex(colorScheme, 0, 7)
+        frame = pygame.transform.scale(frameSrc[colorScheme], (gridWidth+blockSize*2, gridHeight+blockSize*2))        
+        grid = pygame.transform.scale(gridSrc[colorScheme], (gridWidth, gridHeight))
+        DrawNext()
+        DrawScore()
+        setColorScheme(colorScheme)
         
 def GameStarted(bRollCredits):
     global bMoved, bDrop, bBomb, bBombed, bTetris, bDropBlocks, bCombo
@@ -805,7 +823,7 @@ def GameStarted(bRollCredits):
     SetGameplay()
 
     graphics = InitSettings('graphics')
-    SetGraphics(graphics[0], graphics[1], graphics[2], graphics[3])
+    SetGraphics(graphics[0], graphics[1], graphics[2])
     
     if bRollCredits: #v2.4
         RollCredits(False)
@@ -1137,7 +1155,7 @@ def GameStarted(bRollCredits):
                             if flash == 1:
                                 heatAlpha = 255
                                 if tetrisEffect == 4:
-                                    if colScheme == 7 : #v2.5
+                                    if colorScheme == 7 : #v2.5
                                         for i in range(len(hotList)):
                                             hotList[i].color = tetrisColors[randint(7,8)]
                                     else:
@@ -1150,6 +1168,7 @@ def GameStarted(bRollCredits):
                                 heatAlpha = 127
                                 d += 1
                         else:
+                            RandomBackdropSchemes() #v2.6
                             DISPLAY.blit(backdrop, backdropRect)
                             DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
                             d = 0
@@ -1157,7 +1176,7 @@ def GameStarted(bRollCredits):
                             bQuad = True
                             #if numBombs != -1: #v2.6 Move to CheckTetris()
                             #    bombs += 1
-                            if colScheme == 7: #v2.5
+                            if colorScheme == 7: #v2.5
                                 for i in range(len(hotList)):
                                     hotList[i].color = tetrisColors[randint(7,8)]
                             else:
@@ -1288,7 +1307,7 @@ def EndGame():
     #endingLevel = endLevel
 
     # The ultimate Tetris megabomb!
-    megaBombMap = GetMegaBombMap(randint(0,3), colScheme==7)
+    megaBombMap = GetMegaBombMap(randint(0,3), colorScheme==7)
 
     shape.clear()
     for i in range(20):
@@ -1517,7 +1536,7 @@ def RollCredits(bEndGame):
                         chumpLine = chumpLineSrc[:chumpCount]
                         champion = font.render(chumpLine, True, WHITE, BLACK)
                     else:
-                        if colScheme == 7: #v2.5
+                        if colorScheme == 7: #v2.5
                             fontColor = outlineColors[randint(7,8)]
                         else:
                             fontColor = outlineColors[randint(0,6)]
@@ -1560,7 +1579,7 @@ def RollCredits(bEndGame):
             tick += 1
             if tick >= FPS*4 or bRollAlready:
                 bRollCredits = True
-                if colScheme == 7: #v2.5
+                if colorScheme == 7: #v2.5
                     randColor = outlineColors[randint(7,8)]
                 else:
                     randColor = outlineColors[randint(0,6)]
@@ -1645,7 +1664,7 @@ def RollCredits(bEndGame):
 
             elif event.type == DROPTETRA:
                 i = randint(0,6)
-                nextShape = GetNextList(colScheme, randint(0,1))[i][randint(0,len(nextList[i])-1)].copy() #v2.5
+                nextShape = GetNextList(colorScheme, randint(0,1))[i][randint(0,len(nextList[i])-1)].copy() #v2.5
                 shapeRect = nextShape.get_rect()
                 offsetX = randint(0, displayWidth//blockSize - shapeRect.width//blockSize) * blockSize
                 blockFX.append([nextShape, [offsetX, -shapeRect.height]])
@@ -1726,7 +1745,7 @@ def GetCredits():
     for i in range(len(creditList)):
         for j in range(len(creditList[i])):
             if j == 0:
-                if colScheme == 7:
+                if colorScheme == 7:
                     colour = GREY #v2.5
                 else:
                     colour = outlineColors[i]
@@ -1807,7 +1826,7 @@ def Paused(bCredits):
         elif option == 'setmode':
             bSetMode = True
             graphics = InitSettings('graphics')
-            SetGraphics(graphics[0], graphics[1], graphics[2], graphics[3])
+            SetGraphics(graphics[0], graphics[1], graphics[2])
             DrawScore()
             DrawNext()
             InitOptions(blockSize/48, gridWidth//2, 0)
@@ -1828,7 +1847,7 @@ def Paused(bCredits):
         
 def GameOver():
     bInputEnabled = False
-    gameOver = font.render('GAME OVER', True, outlineColors[colScheme]) #v2.5
+    gameOver = font.render('GAME OVER', True, outlineColors[colorScheme]) #v2.5
     gameOverFrame = Rect(gridWidth//2-blockSize*3, gridHeight//2-blockSize, blockSize*6, blockSize*2)
     GRID.fill(BLACK, gameOverFrame)
     GRID.blit(gameOver, gameOver.get_rect(center = (gridWidth//2, gridHeight//2)))
@@ -1850,7 +1869,7 @@ def GameOver():
                     elif option == 'restart':
                         return False
 
-                    gameOver = font.render('GAME OVER', True, outlineColors[colScheme]) #v2.5
+                    gameOver = font.render('GAME OVER', True, outlineColors[colorScheme]) #v2.5
                     gameOverFrame = Rect(gridWidth//2-blockSize*3, gridHeight//2-blockSize, blockSize*6, blockSize*2)
                     GRID.fill(BLACK, gameOverFrame)
                     GRID.blit(gameOver, gameOver.get_rect(center = (gridWidth//2, gridHeight//2)))
@@ -1936,8 +1955,8 @@ def TopTen():
     row = 3.0
     for i in range(len(topTen)):
         if i == slot:
-            playerName = smallFont.render(str(i+1)+'. '+topTen[i][0]+'_', True, outlineColors[colScheme]) #v2.5
-            playerScore = smallFont.render(str(topTen[i][1]), True, outlineColors[colScheme]) #v2.5
+            playerName = smallFont.render(str(i+1)+'. '+topTen[i][0]+'_', True, outlineColors[colorScheme]) #v2.5
+            playerScore = smallFont.render(str(topTen[i][1]), True, outlineColors[colorScheme]) #v2.5
         else:
             playerName = smallFont.render(str(i+1)+'. '+topTen[i][0], True, WHITE)
             playerScore = smallFont.render(str(topTen[i][1]), True, WHITE)
@@ -1982,11 +2001,11 @@ def TopTen():
                             if shiftedKey >= ord('A') and shiftedKey <= ord('Z'):
                                 key -= 32
                         playerName += chr(key)
-                        topScores[slot][0] = smallFont.render(str(slot+1)+'. '+playerName+'_', True, outlineColors[colScheme]) #v2.5
+                        topScores[slot][0] = smallFont.render(str(slot+1)+'. '+playerName+'_', True, outlineColors[colorScheme]) #v2.5
                     elif event.key == K_BACKSPACE and playerName != '':
                         bUpdate = True #v2.5
                         playerName = playerName[:-1]
-                        topScores[slot][0] = smallFont.render(str(slot+1)+'. '+playerName+'_', True, outlineColors[colScheme]) #v2.5
+                        topScores[slot][0] = smallFont.render(str(slot+1)+'. '+playerName+'_', True, outlineColors[colorScheme]) #v2.5
                     elif event.key == K_RETURN:
                         bUpdate = True #v2.5
                         bNewScore = False
