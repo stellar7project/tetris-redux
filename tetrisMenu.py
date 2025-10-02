@@ -26,7 +26,19 @@ else:
 iRes = resolutions.index((VideoInfo.current_w, VideoInfo.current_h))
 
 bWindowed = False
-#bDropFX = True
+
+#v2.6 Moved backdrop initialization here
+backdropSrc = []
+backdrops = os.listdir('images/backdrops')
+i = 0
+while i < len(backdrops):
+    imgFormat = backdrops[i][len(backdrops[i])-3:]
+    if imgFormat == 'png' or imgFormat == 'jpg':
+        backdropSrc.append( pygame.image.load("images/backdrops/"+backdrops[i]).convert_alpha() )
+        i += 1
+    else:
+        backdrops.pop(i)
+
 colourScheme = 8                #v2.5 RANDOM SCHEME
 if backdrops != []:
     backdropIndex = len(backdrops)  #v2.6 RANDOM BACKDROP
@@ -427,10 +439,11 @@ def GetSound(contents):
         soundVolume = int(contents[k+1][contents[k+1].index('=')+1:len(contents[k+1])])
         musicVolume = int(contents[k+2][contents[k+2].index('=')+1:len(contents[k+2])])
         playbackMode = int(contents[k+3][contents[k+3].index('=')+1:len(contents[k+3])])
-        musicTrack = int(contents[k+4][contents[k+4].index('=')+1:len(contents[k+4])])
-        if musicTrack > len(musicList)+1: #v2.5 RANDOM TRACK
-            musicTrack = len(musicList)+1
-            SaveSettings('AUDIO')
+        if musicTrack != 0: #v2.6
+            musicTrack = int(contents[k+4][contents[k+4].index('=')+1:len(contents[k+4])])
+            if musicTrack > len(musicList)+1: #v2.5 RANDOM TRACK
+                musicTrack = len(musicList)+1
+                SaveSettings('AUDIO')
     else:
         contents.append('[AUDIO]\n')
         contents.append('soundVolume=' + str(soundVolume) +'\n')

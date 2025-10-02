@@ -53,16 +53,7 @@ scoreSound = pygame.mixer.Channel(1)
 bombSound = pygame.mixer.Channel(2)
 whooshSound = pygame.mixer.Channel(3)
 
-backdropSrc = []
-backdrops = os.listdir('images/backdrops')
-i = 0
-while i < len(backdrops):
-    imgFormat = backdrops[i][len(backdrops[i])-3:]
-    if imgFormat == 'png' or imgFormat == 'jpg':
-        backdropSrc.append( pygame.image.load("images/backdrops/"+backdrops[i]).convert_alpha() )
-        i += 1
-    else:
-        backdrops.pop(i)
+#-- v2.6 Moved backdrop initialization to menu script --#
 
 gridSrc = (
     pygame.image.load("images/schemes/gridRed.png").convert_alpha(),
