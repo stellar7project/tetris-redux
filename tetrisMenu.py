@@ -65,10 +65,11 @@ rotateKey = K_UP
 dropKey = K_DOWN
 bombKey = K_RSHIFT
 
-startLevel = 0
+MAX_SPEED = 30 #v2.6
+startLevel = 1
 numBombs = 0
 dropMode = 0
-endLevel = 35
+endLevel = 30
 
 mainMenu = []
 optsMenu = []
@@ -1082,10 +1083,10 @@ def gameplayOption(key):
         pygame.mixer.Sound.play(ts_rotate)
         bUpdateMenu = True
         if cp == 0:
-            if startLevel > 0:
+            if startLevel > 1:
                 startLevel -= 1
             else:
-                startLevel = 30
+                startLevel = MAX_SPEED
         elif cp == 1:
             if numBombs > -1:
                 numBombs -= 1
@@ -1107,10 +1108,10 @@ def gameplayOption(key):
         pygame.mixer.Sound.play(ts_rotate)
         bUpdateMenu = True
         if cp == 0:
-            if startLevel < 30:
+            if startLevel < MAX_SPEED:
                 startLevel += 1
             else:
-                startLevel = 0
+                startLevel = 1
         elif cp == 1:
             if numBombs < 10:
                 numBombs += 1

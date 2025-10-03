@@ -18,7 +18,7 @@ def SetGameplay():
 
     gameplay = InitSettings('gameplay')
     #level = 0
-    rate = 31-gameplay[0]
+    rate = FPS+1 - gameplay[0] #v2.6
     numBombs = gameplay[1]
     bombs = numBombs
     dropMode = gameplay[2]
@@ -473,8 +473,8 @@ def CheckTetris():
         if lines//10 != lineLevel:
             level += 1
             score += bombs * 100 #v2.5
-            if level <= 30: #v2.6
-                rate = min(rate, 31 - level)
+            if level < MAX_SPEED: #v2.6 Fastest rate of 1 grid unit per frame at Level 29
+                rate = min(rate, FPS - level)
         
         if nTetris >= 4 and numBombs != -1: #v2.6
             bombs += 1
@@ -666,8 +666,8 @@ nextDeque = deque() #v2.6
 def SpawnShape():
     global bMoved
     global shapeType, iRot
-    #global nextDeque
     global shapeList
+    
     switch = {
         0: gen7,
         1: gen7,
@@ -696,13 +696,13 @@ def SpawnShape():
             shapeList = [0,1,2,3,4,5,6]
             shapeList.pop(nextDeque[-1][0])
         count = 1
-        DelayFrames(12)
+        if DelayFrames(12) == 'restart': return  # Crash hotfix on restart
     else: # Game Start
         shapeList = [0,1,2,3,4,5,6]
         count = 7
     
     for i in range(count):
-        r = randint(0,len(shapeList)-1)
+        r = randint(0, len(shapeList)-1)
         #v2.6 Saved monochrome colour at index 2
         match colorScheme:
             case 7:
@@ -818,6 +818,7 @@ def GameStarted(bRollCredits):
     global heatAlpha, explode, bombs
     global flash, tetrisEffect
     global updateRects #v2.5
+    global bRunning #v2.6
 
     #Initialization ==================================
     SetGameplay()
@@ -834,7 +835,6 @@ def GameStarted(bRollCredits):
     SetControls()
     #=================================================
     mousePos = pygame.mouse.get_pos()
-    SpawnShape()
 
     DISPLAY.blit(backdrop, backdropRect)
     DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
@@ -858,13 +858,16 @@ def GameStarted(bRollCredits):
     dIndex = 0
     heatAlpha = 0
     updateRects = [] #v2.5
+    
+    bRunning = True
+    SpawnShape() #v2.6 Spawn tetromino after all inits
 
     #v2.5
     DrawDisplay()
     pygame.display.flip()
     pygame.time.Clock().tick(FPS)
 
-    while True:
+    while bRunning:
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -2030,6 +2033,7 @@ def TopTen():
         pygame.time.Clock().tick(FPS)
 
 def DelayFrames(numFrames):
+    global bRunning
     i = 0
     while i < numFrames:
         i += 1
@@ -2039,10 +2043,10 @@ def DelayFrames(numFrames):
                     option = Paused(False)
                     if option == 'quit':
                         PlayNextTrack(False)
-                        #ResetGame(True)
-                        return True
+                        bRunning = False    #v2.6 Fix to exit back to main menu
+                        return
                     elif option == 'restart':
-                        return False
+                        return 'restart'    #v2.6 Crash fix
                         
                 elif event.key == K_F4 and pygame.key.get_pressed()[K_LALT]:
                     pygame.quit()
