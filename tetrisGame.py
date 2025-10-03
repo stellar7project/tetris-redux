@@ -451,14 +451,20 @@ def GetBombedList():
 
 def CheckTetris():
     global score, level, lines, rate, bombs
+    global nTetris #v2.6
 
     bonus = len(tetrisLines)
     tetrisLines.clear()
     for i in range(len(blockList)):
         if len(blockList[i]) == 10:
             tetrisLines.append(i)
+    
+    nLines = len(tetrisLines)
+    if nLines > 0:
+        nTetris += len(tetrisLines) #v2.6 Accumulate across combos
+    else:
+        nTetris = 0
 
-    nTetris = len(tetrisLines)
     if nTetris > 0:
         #blockSound.play(ts_break)
         
@@ -818,7 +824,9 @@ def GameStarted(bRollCredits):
     global heatAlpha, explode, bombs
     global flash, tetrisEffect
     global updateRects #v2.5
-    global bRunning #v2.6
+    #v2.6
+    global bRunning
+    global nTetris
 
     #Initialization ==================================
     SetGameplay()
@@ -858,9 +866,11 @@ def GameStarted(bRollCredits):
     dIndex = 0
     heatAlpha = 0
     updateRects = [] #v2.5
-    
+
+    #v2.6
+    nTetris = 0
     bRunning = True
-    SpawnShape() #v2.6 Spawn tetromino after all inits
+    SpawnShape() # Spawn tetromino after all inits
 
     #v2.5
     DrawDisplay()
@@ -1911,6 +1921,7 @@ def ResetGame():
     global bDrop, bBomb, bBombed, bTetris, bDropBlocks, bCombo
     global score, level, lines, bombsTitle
     global explode
+    global nTetris #v2.6
 
     blockFX.clear()
     blockList.clear()
@@ -1924,6 +1935,7 @@ def ResetGame():
     score = 0
     level = 0
     lines = 0
+    nTetris = 0
     #heatBlock.set_alpha(255)
     #tetrisEffect = 0
     explode = -1
