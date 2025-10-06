@@ -1607,7 +1607,7 @@ def SetOptionRects(menuRect):
         cursorRect.centery = menuRect.top + cPos[i]
         cPosRects.append(cursorRect.copy())
 
-def RestartMenu(DISPLAY, GRID):
+def RestartMenu(DISPLAY, GRID, updateRect):
     pygame.mouse.set_visible(True)
 
     gridLocX = DISPLAY.get_rect().width//2 - blockSize*5
@@ -1745,5 +1745,5 @@ def RestartMenu(DISPLAY, GRID):
         GRID.blit(RESTART, restartRect)
         DISPLAY.blit(GRID, (gridLocX, gridLocY))
 
-        pygame.display.flip()
+        pygame.display.update(updateRect) #v2.6
         pygame.time.Clock().tick(30)

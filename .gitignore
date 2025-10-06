@@ -1,5 +1,6 @@
 # Ignore build and distribution folders
 /__pycache__/
+/2.5/
 /build/
 /dist/
 /Output/

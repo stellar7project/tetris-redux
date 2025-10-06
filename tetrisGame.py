@@ -40,6 +40,7 @@ def SetGraphics(resolution, bWindowed, backIndex):
     global backdrop, backdropRect, grid, frame, tetrisOut, tetris4Out, combo
     global font, smallFont, pointFont
     global scoreTitle, levelTitle, linesTitle, nextTitle, bombsTitle #gameOver
+    global tetrisLabel, pointsLabel #v2.6
     global blockSize 
     
     global colorScheme, backScheme #v2.6
@@ -120,14 +121,17 @@ def SetGraphics(resolution, bWindowed, backIndex):
     pointFont = pygame.font.Font('fonts/Broderbund Old Bold.ttf', int(48*f))
     scoreTitle = font.render('SCORE', True, WHITE)
     levelTitle = font.render('LEVEL', True, WHITE)
-    linesTitle = font.render('LINES', True, WHITE)         
+    linesTitle = font.render('LINES', True, WHITE)  
     nextTitle = font.render('NEXT', True, WHITE)
     if bombs != -1:
         bombsTitle = font.render('BOMBS', True, WHITE)
     else:
         bombsTitle = font.render('BOMBS', True, GREY)
     #gameOver = font.render('GAME OVER', True, OUTRED)
-    
+    #v2.6
+    tetrisLabel = font.render('TETRIS', True, WHITE)
+    pointsLabel = font.render('POINTS', True, WHITE)
+
     GRID = pygame.Surface((gridWidth, gridHeight))
     SCORE = pygame.Surface((scoreWidth, scoreHeight))
     NEXT = pygame.Surface((nextWidth, nextHeight))
@@ -451,7 +455,7 @@ def GetBombedList():
 
 def CheckTetris():
     global score, level, lines, rate, bombs
-    global nTetris #v2.6
+    global _tetris, _points #v2.6
 
     bonus = len(tetrisLines)
     tetrisLines.clear()
@@ -459,30 +463,28 @@ def CheckTetris():
         if len(blockList[i]) == 10:
             tetrisLines.append(i)
     
-    nLines = len(tetrisLines)
-    if nLines > 0:
-        nTetris += len(tetrisLines) #v2.6 Accumulate across combos
-    else:
-        nTetris = 0
+    tetris = len(tetrisLines) 
 
-    if nTetris > 0:
+    if tetris > 0:
         #blockSound.play(ts_break)
         
-        scoreSound.play(ts_tetris[min(nTetris-1, 4)]) #v2.6 
+        scoreSound.play(ts_tetris[min(tetris-1, 4)]) #v2.6 
 
-        points = 100 * (nTetris + bonus)**2
+        points = 100 * (tetris + bonus)**2
         
-        SetPointsDat(points)
-        score += points
         lineLevel = lines//10
-        lines += nTetris
+        lines += tetris
         if lines//10 != lineLevel:
             level += 1
-            score += bombs * 100 #v2.5
+            points += bombs * 100 #v2.6
             if level < MAX_SPEED: #v2.6 Fastest rate of 1 grid unit per frame at Level 29
                 rate = min(rate, FPS - level)
-        
-        if nTetris >= 4 and numBombs != -1: #v2.6
+        #v2.6
+        SetPointsDat(points)
+        score += points
+        _points += points
+        _tetris += tetris #v2.6 Accumulate across combos
+        if numBombs != -1 and _tetris >= 4: #v2.6
             bombs += 1
         DrawScore()
         return True
@@ -512,11 +514,21 @@ def DrawScore():
     SCORE.blit(linesTitle, linesTitle.get_rect(center = (scoreWidth//2, blockSize*7)))
     linesText = font.render(str(lines), True, WHITE)
     SCORE.blit(linesText, linesText.get_rect(center = (scoreWidth//2, blockSize*8)))
+    
     #v2.6
     SCORE.blit(bombsTitle, bombsTitle.get_rect(center=(scoreWidth//2, int(blockSize*10))))
     if bombs != -1:
         bombsText = font.render(str(bombs), True, WHITE)
         SCORE.blit(bombsText, bombsText.get_rect(center=(scoreWidth//2, int(blockSize*11))))
+
+    SCORE.blit(tetrisLabel, tetrisLabel.get_rect(center = (scoreWidth//2, blockSize*15)))
+    tetrisText = font.render(str(_tetris), True, WHITE)
+    SCORE.blit(tetrisText, tetrisText.get_rect(center = (scoreWidth//2, blockSize*16)))
+
+    SCORE.blit(pointsLabel, pointsLabel.get_rect(center = (scoreWidth//2, blockSize*18)))
+    pointsText = font.render(str(_points), True, WHITE)
+    SCORE.blit(pointsText, pointsText.get_rect(center = (scoreWidth//2, blockSize*19)))
+
 
 def DrawNext():
     NEXT.fill(colorList[colorScheme])
@@ -543,11 +555,11 @@ def DrawNext():
 
 screenShake = [0, 0]
 def DrawDisplay():
-    #global explode
+    global updateSpace
     pointsMsg = None
 
     if bombedList != [] or screenShake[0] != 0 or hotList != []:
-        updateRects.append(Rect(0,0,displayWidth,displayHeight)) #v2.5
+        updateSpace = Rect(0, 0, displayWidth, displayHeight) #v2.6
 
         if screenShake[0] > 0:
             screenShake[0] -= 1
@@ -646,9 +658,7 @@ def DrawDisplay():
         DISPLAY.blit(GRID,(gridLocX, gridLocY))
         DISPLAY.blit(SCORE,(gridLocX+gridWidth+blockSize*2, gridLocY)) #v2.6 Adjusted y-offest --#(1248,108))
         DISPLAY.blit(NEXT,(gridLocX-blockSize*7, gridLocY)) #v2.6 Adjusted y-offest --#(432,108))
-        updateRects.append(Rect(gridLocX, gridLocY, gridWidth, gridHeight))
-        updateRects.append(Rect(gridLocX+gridWidth+blockSize*2, gridLocY+blockSize, scoreWidth, scoreHeight))
-        updateRects.append(Rect(gridLocX-blockSize*7, gridLocY+blockSize, nextWidth, nextHeight))
+        updateSpace = updateRects
         
     if pointsDat[0] != 0:
         if pointsMsg == None:
@@ -673,7 +683,7 @@ def SpawnShape():
     global bMoved
     global shapeType, iRot
     global shapeList
-    
+    global _tetris, _points #v2.6
     switch = {
         0: gen7,
         1: gen7,
@@ -692,6 +702,8 @@ def SpawnShape():
     rotProxy.clear()
     #pointsDat.clear()
     iRot = 0
+    _tetris = 0
+    _points = 0
 
     if not pygame.mixer.music.get_busy(): #v2.2
         PlayNextTrack(False)
@@ -823,11 +835,10 @@ def GameStarted(bRollCredits):
     global bMoved, bDrop, bBomb, bBombed, bTetris, bDropBlocks, bCombo
     global heatAlpha, explode, bombs
     global flash, tetrisEffect
-    global updateRects #v2.5
+    global updateRects, updateSpace #v2.6
     #v2.6
     global bRunning
-    global nTetris
-
+    
     #Initialization ==================================
     SetGameplay()
 
@@ -846,7 +857,6 @@ def GameStarted(bRollCredits):
 
     DISPLAY.blit(backdrop, backdropRect)
     DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
-    DrawScore()
 
     bWait = False
     bGameOver = False
@@ -865,12 +875,15 @@ def GameStarted(bRollCredits):
     flash = -1 #Screen flash
     dIndex = 0
     heatAlpha = 0
-    updateRects = [] #v2.5
-
+    updateRects = [
+        Rect(gridLocX, gridLocY, gridWidth, gridHeight),
+        Rect(gridLocX+gridWidth+blockSize*2, gridLocY, scoreWidth, scoreHeight), #v2.6 LocY adjusted for new length
+        Rect(gridLocX-blockSize*7, gridLocY, nextWidth, nextHeight)             # Also here] #v2.5
+    ]
     #v2.6
-    nTetris = 0
     bRunning = True
     SpawnShape() # Spawn tetromino after all inits
+    DrawScore()
 
     #v2.5
     DrawDisplay()
@@ -1303,11 +1316,13 @@ def GameStarted(bRollCredits):
             bGameOver = False
             if GameOver():
                 break
+            continue #v2.6 
+
         elif bWait:
             bWait = False
             pygame.time.wait(100)
-            
-        pygame.display.update(updateRects); updateRects.clear() #v2.5 update frame
+        
+        pygame.display.update(updateSpace); #v2.6 update frame
         pygame.time.Clock().tick(FPS)
 
 
@@ -1327,7 +1342,7 @@ def EndGame():
         for j in range(10):
             shape.append([blocks[megaBombMap[i][j]], [blockSize*j, -blockSize*(i+1)], megaBombMap[i][j]])
     
-    updateRects.clear() #v2.5
+    #updateRects.clear() #v2.5
     while shape[0][1][1] < blockSize*19:
         GRID.blit(grid, (0,0))
         
@@ -1356,7 +1371,7 @@ def EndGame():
 
         DrawBlocks()
         DrawDisplay()
-        pygame.display.update(updateRects); updateRects.clear() #v2.5 update frame
+        pygame.display.update(updateSpace); #v2.6 update frame
         pygame.time.Clock().tick(FPS)
     
     pygame.mixer.Sound.play(ts_smashing)
@@ -1378,7 +1393,7 @@ def EndGame():
 
         DrawBlocks()
         DrawDisplay()
-        pygame.display.update(updateRects); updateRects.clear() #v2.5 update frame
+        pygame.display.update(updateSpace); #v2.6 update frame
         pygame.time.Clock().tick(FPS)
 
     # Blow this shit up to high hell!
@@ -1445,7 +1460,7 @@ def EndGame():
 
         DrawBlocks()
         DrawDisplay()
-        pygame.display.update(updateRects); updateRects.clear() #v2.5 update frame
+        pygame.display.update(updateSpace); #v2.6 update frame
         pygame.time.Clock().tick(FPS)
     #print(time.time()-ts)
     return RollCredits(True)
@@ -1459,6 +1474,7 @@ def RollCredits(bEndGame):
     
     if bEndGame:
         bInputEnabled = False
+        spaceFill = 0
         opacity = 256
         varFPS = int(FPS*0.4)
         pygame.time.set_timer(VICTORY, 3000)
@@ -1494,6 +1510,7 @@ def RollCredits(bEndGame):
         GetCredits()
         creditRollRect = CREDITROLL.get_rect( left=gridLocX, top=displayHeight )
         bInputEnabled = True
+        spaceFill = 255
         opacity = 0
         grid.set_alpha(0)
         varFPS = FPS
@@ -1562,7 +1579,7 @@ def RollCredits(bEndGame):
                 GRID.blit(congrats, congratsRect)
                 #GRID.blit(champion, championRect)
         else:
-            if opacity > 0 and creditRollRect.bottom > blockSize*8:
+            '''if opacity > 0 and creditRollRect.bottom > blockSize*8:
                 opacity -= 16
                 congrats.set_alpha(opacity)
                 champion.set_alpha(opacity)
@@ -1571,8 +1588,8 @@ def RollCredits(bEndGame):
                 GRID.blit(congrats, congratsRect)
                 GRID.blit(youReached, youReachedRect)
                 GRID.blit(levelNum, levelNumRect)
-                GRID.blit(champion, championRect)
-            else:
+                GRID.blit(champion, championRect)'''
+            if spaceFill == 255: #v2.6
                 if creditRollRect.bottom > blockSize*8:
                     #GRID.blit(CREDITROLL, creditRollRect)
                     creditRollRect.top -= 2
@@ -1587,11 +1604,17 @@ def RollCredits(bEndGame):
                 else:
                     pygame.time.set_timer(DROPTETRA, 0)
                     return #v2.4 Auto credit exit
+            else:
+                GRID.blit(congrats, congratsRect)
+                GRID.blit(youReached, youReachedRect)
+                GRID.blit(levelNum, levelNumRect)
+                GRID.blit(champion, championRect)
 
         if bInputEnabled and not bRollCredits:
             tick += 1
             if tick >= FPS*4 or bRollAlready:
                 bRollCredits = True
+                opacity = 0 #v2.6
                 if colorScheme == 7: #v2.5
                     randColor = outlineColors[randint(7,8)]
                 else:
@@ -1696,31 +1719,37 @@ def RollCredits(bEndGame):
                 sys.exit()
         
         if bRollCredits:
-            if fadeOut > 175:
+            '''if fadeOut > 175:
                 fadeOut -= 5
                 NEXT.fill((fadeOut, fadeOut, fadeOut), None, BLEND_RGB_MULT)
                 SCORE.fill((fadeOut, fadeOut, fadeOut), None, BLEND_RGB_MULT)
-                #backdrop.fill((fadeOut, fadeOut, fadeOut), None, BLEND_RGB_MULT)
+                #backdrop.fill((fadeOut, fadeOut, fadeOut), None, BLEND_RGB_MULT)'''
 
-            DISPLAY.fill(BLACK)
+            if spaceFill < 255:
+                spaceFill += 5
+                FADE_TO_BLACK.set_alpha(spaceFill)
+                
             if creditRollRect.top < displayHeight:
+                TETRASPACE.fill(BLACK)
                 i = 0
                 while i < len(blockFX):
                     if blockFX[i][1][1]+blockSize < displayHeight:
                         blockFX[i][1][1] += blockSize
-                        DISPLAY.blit(blockFX[i][0], blockFX[i][1])
+                        TETRASPACE.blit(blockFX[i][0], blockFX[i][1])
                         i += 1
                     else:
                         blockFX.pop(i)
-                DISPLAY.blit(CREDITROLL, creditRollRect)
+                TETRASPACE.blit(CREDITROLL, creditRollRect)
+                DISPLAY.blit(TETRASPACE, (0, 0)) #v2.6
             else:
-                if opacity > 0:
+                '''if opacity > 0:
                     if backdropIndex != len(backdrops)-1:
                         backdrop.set_alpha(opacity)
-                    frame.set_alpha(opacity)
-                    DISPLAY.blit(backdrop, backdropRect)
-                    DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
+                    frame.set_alpha(opacity)'''
+                DISPLAY.blit(backdrop, backdropRect)
+                DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
                 DrawDisplay()
+                DISPLAY.blit(FADE_TO_BLACK, (0, 0)) #v2.6
         else:
             DrawDisplay()
         pygame.display.flip()
@@ -1728,6 +1757,7 @@ def RollCredits(bEndGame):
 
 def GetCredits():
     global CREDITROLL
+    global FADE_TO_BLACK, TETRASPACE #v2.6
 
     creditList = [
         ['Program Director'] + PROGRAM_DIRECTOR,
@@ -1752,8 +1782,10 @@ def GetCredits():
     creditList.append(('Special thanks to', 'Alexey Pajitnov', 'Henk Rogers'))
     CREDITROLL = pygame.transform.scale(colorSrc['black'].copy(), (gridWidth*3, blockSize*creditLength))
     CREDITROLL.set_colorkey(BLACK)
-    #CREDITROLL = pygame.Surface((gridWidth*3, blockSize*creditLength))
-    #CREDITROLL.fill(BLUE)
+    FADE_TO_BLACK = pygame.transform.scale(colorSrc['black'], (displayWidth, displayHeight))
+    FADE_TO_BLACK.set_alpha(0)
+    TETRASPACE = pygame.Surface((displayWidth, displayHeight))
+    
     creditPos = 0
     for i in range(len(creditList)):
         for j in range(len(creditList[i])):
@@ -1809,15 +1841,14 @@ def Paused(bCredits):
     InitOptions(blockSize/48, gridWidth//2, 0)
     option = ''
     while True:
-        if bCredits:
-            DISPLAY.fill(BLACK)
-            DISPLAY.blit(CREDITROLL, creditRollRect)
-        else:
+        if not bCredits:
             DISPLAY.blit(backdrop, backdropRect)
             DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
             GRID.blit(grid, (0,0))
             DrawBlocks()
             DrawDisplay()
+        else:
+            DISPLAY.blit(TETRASPACE, (0, 0)) #v2.6
         
         option = GameMenu(DISPLAY, GRID, option)
         if option == 'resume':
@@ -1829,9 +1860,9 @@ def Paused(bCredits):
         elif option == 'restart':
             pygame.mouse.set_visible(False)
             ResetGame()
-            DrawScore()
             PlayNextTrack(True)
             SpawnShape()
+            DrawScore()
             return 'restart'
         elif option == 'main':
             ResetGame()
@@ -1857,15 +1888,19 @@ def Paused(bCredits):
 
         pygame.display.flip()
         pygame.time.Clock().tick(FPS)
-        
+
+#v2.6
+def DrawGameOver(gameOver, gameOverFrame, updateRect):
+    GRID.fill(BLACK, gameOverFrame)
+    GRID.blit(gameOver, gameOver.get_rect(center = (gridWidth//2, gridHeight//2)))
+    DISPLAY.blit(GRID,(gridLocX, gridLocY))
+    pygame.display.update(updateRect)
+
 def GameOver():
     bInputEnabled = False
     gameOver = font.render('GAME OVER', True, outlineColors[colorScheme]) #v2.5
     gameOverFrame = Rect(gridWidth//2-blockSize*3, gridHeight//2-blockSize, blockSize*6, blockSize*2)
-    GRID.fill(BLACK, gameOverFrame)
-    GRID.blit(gameOver, gameOver.get_rect(center = (gridWidth//2, gridHeight//2)))
-    DISPLAY.blit(GRID,(gridLocX, gridLocY))
-    pygame.display.flip()
+    DrawGameOver(gameOver, gameOverFrame, Rect(displayWidth//2-blockSize*3, displayHeight//2-blockSize, blockSize*6, blockSize*2))
     while True:
 
         for event in pygame.event.get():
@@ -1882,38 +1917,30 @@ def GameOver():
                     elif option == 'restart':
                         return False
 
-                    gameOver = font.render('GAME OVER', True, outlineColors[colorScheme]) #v2.5
-                    gameOverFrame = Rect(gridWidth//2-blockSize*3, gridHeight//2-blockSize, blockSize*6, blockSize*2)
-                    GRID.fill(BLACK, gameOverFrame)
-                    GRID.blit(gameOver, gameOver.get_rect(center = (gridWidth//2, gridHeight//2)))
-                    DISPLAY.blit(GRID, (gridLocX, gridLocY))
-                    pygame.display.flip()
+                    DrawGameOver(gameOver, gameOverFrame, Rect(gridLocX, gridLocY, gridWidth, gridHeight))
 
             elif event.type == GAMEOVER:
                 pygame.time.set_timer(GAMEOVER, 0)
                 bInputEnabled = True
                 TopTen()
-                bRestart = RestartMenu(DISPLAY, GRID)
+                bRestart = RestartMenu(DISPLAY, GRID, Rect(gridLocX, gridLocY, gridWidth, gridHeight))
                 if bRestart == '':
                     GRID.blit(grid, (0,0))
                     DrawBlocks()
                 else:
                     ResetGame()
                     if bRestart:
-                        DrawScore()
                         SpawnShape()
+                        DrawScore()
                         return False
                     return True
-                
-                GRID.fill(BLACK, gameOverFrame)
-                GRID.blit(gameOver, gameOver.get_rect(center = (gridWidth//2, gridHeight//2)))
-                DISPLAY.blit(GRID, (gridLocX, gridLocY))
-                pygame.display.flip()
+
+                DrawGameOver(gameOver, gameOverFrame, Rect(gridLocX, gridLocY, gridWidth, gridHeight))
 
             elif event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-
+        
         pygame.time.Clock().tick(FPS)
 
 
@@ -1921,7 +1948,6 @@ def ResetGame():
     global bDrop, bBomb, bBombed, bTetris, bDropBlocks, bCombo
     global score, level, lines, bombsTitle
     global explode
-    global nTetris #v2.6
 
     blockFX.clear()
     blockList.clear()
@@ -1935,7 +1961,6 @@ def ResetGame():
     score = 0
     level = 0
     lines = 0
-    nTetris = 0
     #heatBlock.set_alpha(255)
     #tetrisEffect = 0
     explode = -1
@@ -1952,6 +1977,7 @@ def ResetGame():
         bombsTitle = font.render('BOMBS', True, WHITE)
     else:
         bombsTitle = font.render('BOMBS', True, GREY)
+    pygame.display.flip()
 
 def TopTen():
     topTen = GetTopTen()
@@ -1983,8 +2009,9 @@ def TopTen():
     topTenTitle = font.render('TOP TEN', True, WHITE)
     topTenRect = topTenTitle.get_rect(center=(gridWidth//2, int(blockSize*1.5)))
     playerName = ''
+    '''v2.6 Fix -- Backdrop covers Next and Score panels!!!
     DISPLAY.blit(backdrop, backdropRect)
-    DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))
+    DISPLAY.blit(frame, (gridLocX-blockSize, gridLocY-blockSize))'''
     bUpdate = True #v2.5
     while True:
         GRID.fill(BLACK)
@@ -1993,9 +2020,9 @@ def TopTen():
             GRID.blit(topScores[i][0], topScores[i][1])
             GRID.blit(topScores[i][2], topScores[i][3])
         
-        DrawDisplay()
-        if bUpdate: #v2.5 update frame
+        if bUpdate: #v2.6 update frame
             bUpdate = False
+            DISPLAY.blit(GRID, (gridLocX, gridLocY)) #v2.6 Only draw what's needed
             pygame.display.update(Rect(gridLocX, gridLocY, gridWidth, gridHeight))
             
         for event in pygame.event.get():
@@ -2041,7 +2068,7 @@ def TopTen():
             elif event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-
+        
         pygame.time.Clock().tick(FPS)
 
 def DelayFrames(numFrames):
@@ -2070,5 +2097,5 @@ def DelayFrames(numFrames):
 
         DrawBlocks()
         DrawDisplay()
-        pygame.display.flip()
+        pygame.display.update(updateSpace) #v2.6
         pygame.time.Clock().tick(FPS)
